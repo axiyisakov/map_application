@@ -21,7 +21,7 @@ import YandexMapsMobile
 
 
 
-Setup for 
+Setup for Android
 
 * Specify your API key and locale in your custom application class.
   If you don't have one the you can create it like so
