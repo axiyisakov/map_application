@@ -24,7 +24,7 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
   late final IMapService _iMapService;
-  late final IGeolocatorService _geolocatorService;
+  late final GeolocatorService _geolocatorService;
   final Completer<YandexMapController> _controllerCompleter =
       Completer<YandexMapController>();
   final tashkentLocation = TashkentLocation();

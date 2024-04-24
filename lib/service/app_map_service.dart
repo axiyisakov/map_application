@@ -15,7 +15,7 @@ import 'package:map_application/service/app_geolocator.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 abstract interface class IMapService {
-  final IGeolocatorService _iGeolocatorService;
+  final GeolocatorService _iGeolocatorService;
   void dispose();
   IMapService(this._iGeolocatorService);
   void onMapCreated(YandexMapController controller);
@@ -29,7 +29,7 @@ abstract interface class IMapService {
     VisibleRegion visibleRegion,
   );
 
-  IGeolocatorService get geolocator;
+  GeolocatorService get geolocator;
   Stream<List<PlacemarkMapObject>> get stream;
 
   Sink<List<PlacemarkMapObject>> get sink;
@@ -39,14 +39,14 @@ class MapServiceImpl extends IMapService {
   final Completer<YandexMapController> _completer;
   final StreamController<List<PlacemarkMapObject>> _streamController;
   MapServiceImpl({
-    IGeolocatorService? geolocator,
+    GeolocatorService? geolocator,
     required Completer<YandexMapController>? completer,
   })  : _streamController = StreamController(),
         _completer = completer ?? Completer<YandexMapController>(),
         super(geolocator ?? GeolocatorServiceImpl());
 
   @override
-  IGeolocatorService get geolocator => _iGeolocatorService;
+  GeolocatorService get geolocator => _iGeolocatorService;
 
   @override
   void dispose() async {

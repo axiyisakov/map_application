@@ -12,11 +12,11 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart' as yandex;
 
-abstract interface class IGeolocatorService {
+abstract interface class GeolocatorService {
   Future<Position> getCurrentPosition();
 }
 
-class GeolocatorServiceImpl extends IGeolocatorService {
+class GeolocatorServiceImpl extends GeolocatorService {
   @override
   Future<Position> getCurrentPosition() async {
     final Completer<Position> completer = Completer<Position>();
