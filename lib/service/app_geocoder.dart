@@ -12,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:map_application/util/failure.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 
-const _apiGeocoderKey = 'b66479ba-0171-4dc0-b68d-cfacfe0721e2';
+const _apiGeocoderKey = 'YOUR_YANDEX_GEOCODER_API_KEY';
 
 abstract interface class GeoCoderService {
   YandexGeocoder get geocoder;

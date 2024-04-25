@@ -19,7 +19,7 @@ import 'package:map_application/widget/geocode_info_widget.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
-const _apiGeocoderKey = 'b66479ba-0171-4dc0-b68d-cfacfe0721e2';
+const _apiGeocoderKey = 'YOUR_YANDEX_GEOCODER_API_KEY';
 
 class MapView extends StatefulWidget {
   const MapView({super.key});
