@@ -1,3 +1,12 @@
+/*
+*================================Copyright©=====================================
+?Name        : app_geocoder
+*Author      : Axmadjon Isaqov
+^Version     : CURRENT_VERSION
+&Copyright   : Created by Axmadjon Isaqov on  16:53:52 25.04.2024*© 2024 @axiydev
+!Description : map_application in Dart
+*===============================================================================
+*/
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:map_application/util/failure.dart';
