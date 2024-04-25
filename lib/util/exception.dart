@@ -1,0 +1,1 @@
+class GeocoderException implements Exception {}

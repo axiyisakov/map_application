@@ -2,6 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - geolocator_apple (1.2.0):
     - Flutter
+  - rive_common (0.0.1):
+    - Flutter
   - yandex_mapkit_lite (0.0.1):
     - Flutter
     - YandexMapsMobile (= 4.4.0-lite)
@@ -10,6 +12,7 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - rive_common (from `.symlinks/plugins/rive_common/ios`)
   - yandex_mapkit_lite (from `.symlinks/plugins/yandex_mapkit_lite/ios`)
 
 SPEC REPOS:
@@ -21,12 +24,15 @@ EXTERNAL SOURCES:
     :path: Flutter
   geolocator_apple:
     :path: ".symlinks/plugins/geolocator_apple/ios"
+  rive_common:
+    :path: ".symlinks/plugins/rive_common/ios"
   yandex_mapkit_lite:
     :path: ".symlinks/plugins/yandex_mapkit_lite/ios"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   geolocator_apple: 6cbaf322953988e009e5ecb481f07efece75c450
+  rive_common: 8630be7f6385198f9d31a5bc8cd7f6ccccedf5a1
   yandex_mapkit_lite: db56acd4034898d3b973fa102261231f8c214531
   YandexMapsMobile: 74934971bbd3716e6daecfebed696c07b83b6b22
 

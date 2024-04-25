@@ -9,15 +9,16 @@
 */
 import 'dart:async';
 
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:map_application/data/app_lat_lang.dart';
+import 'package:map_application/service/app_geocoder.dart';
 import 'package:map_application/service/app_geolocator.dart';
+import 'package:yandex_geocoder/yandex_geocoder.dart' hide Point;
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 abstract interface class IMapService {
-  final GeolocatorService _iGeolocatorService;
   void dispose();
-  IMapService(this._iGeolocatorService);
   void onMapCreated(YandexMapController controller);
 
   Future<void> moveToCurrentPosition();
@@ -30,20 +31,36 @@ abstract interface class IMapService {
   );
 
   GeolocatorService get geolocator;
-  Stream<List<PlacemarkMapObject>> get stream;
+  Stream<List<PlacemarkMapObject>> get streamPlacemark;
 
-  Sink<List<PlacemarkMapObject>> get sink;
+  Sink<List<PlacemarkMapObject>> get sinkPlacemark;
+
+  Stream<GeocodeResponse> get streamGeocoder;
+
+  Sink<GeocodeResponse> get sinkGeocoder;
+
+  Stream<bool> get streamAnimation;
+
+  Sink<bool> get sinkAnimation;
 }
 
 class MapServiceImpl extends IMapService {
+  final GeolocatorService _iGeolocatorService;
   final Completer<YandexMapController> _completer;
   final StreamController<List<PlacemarkMapObject>> _streamController;
+  final StreamController<GeocodeResponse> _geocodeResponseController;
+  final StreamController<bool> _animationController;
+  final GeoCoderService _geoCoderService;
   MapServiceImpl({
     GeolocatorService? geolocator,
+    GeoCoderService? geoCoderService,
     required Completer<YandexMapController>? completer,
-  })  : _streamController = StreamController(),
+  })  : _geoCoderService = geoCoderService ?? GeoCoderServiceImpl(),
+        _streamController = StreamController(),
+        _animationController = StreamController(),
+        _geocodeResponseController = StreamController(),
         _completer = completer ?? Completer<YandexMapController>(),
-        super(geolocator ?? GeolocatorServiceImpl());
+        _iGeolocatorService = geolocator ?? GeolocatorServiceImpl();
 
   @override
   GeolocatorService get geolocator => _iGeolocatorService;
@@ -53,11 +70,14 @@ class MapServiceImpl extends IMapService {
     final controller = await _completer.future;
     controller.dispose();
     _streamController.close();
+    _geocodeResponseController.close();
+    _animationController.close();
   }
 
   @override
   void onMapCreated(YandexMapController controller) async {
     _completer.complete(controller);
+    sinkAnimation.add(true);
   }
 
   @override
@@ -67,31 +87,57 @@ class MapServiceImpl extends IMapService {
     bool finished,
     VisibleRegion visibleRegion,
   ) async {
+    sinkAnimation.add(false);
     if (finished) {
       debugPrint(
         'ON CAMERA POSITION CHANGED: $position, $reason, $finished, $visibleRegion',
       );
-      sink.add(
-        List.from(
-          [
-            PlacemarkMapObject(
-              mapId: const MapObjectId('marker1'),
-              icon: PlacemarkIcon.single(
-                PlacemarkIconStyle(
-                  scale: .3,
-                  image: BitmapDescriptor.fromAssetImage(
-                    'assets/icons/marker1.png',
-                  ),
-                ),
-              ),
-              point: Point(
-                latitude: position.target.latitude,
-                longitude: position.target.longitude,
-              ),
-            ),
-          ],
-        ),
-      );
+      final dataOrError = await _geoCoderService.getGeocoderFromPoint((
+        lat: position.target.latitude,
+        lon: position.target.longitude,
+      ));
+
+      debugPrint(dataOrError.toString());
+
+      if (dataOrError.isRight()) {
+        final geocoderResponse = dataOrError.fold(
+          (error) => null,
+          (data) => data,
+        );
+        EasyDebounce.debounce(
+          'debounce',
+          const Duration(
+            milliseconds: 200,
+          ),
+          () {
+            ///add geocoder data
+            sinkGeocoder.add(geocoderResponse!);
+            sinkAnimation.add(true);
+          },
+        );
+      }
+
+      // sinkPlacemark.add(
+      //   List.from(
+      //     [
+      //       PlacemarkMapObject(
+      //         mapId: const MapObjectId('marker1'),
+      //         icon: PlacemarkIcon.single(
+      //           PlacemarkIconStyle(
+      //             scale: .3,
+      //             image: BitmapDescriptor.fromAssetImage(
+      //               'assets/icons/marker1.png',
+      //             ),
+      //           ),
+      //         ),
+      //         point: Point(
+      //           latitude: position.target.latitude,
+      //           longitude: position.target.longitude,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // );
     }
   }
 
@@ -113,7 +159,7 @@ class MapServiceImpl extends IMapService {
               latitude: tashkentLocation.lat,
               longitude: tashkentLocation.long,
             ),
-            zoom: 12,
+            zoom: 14,
           ),
         ),
         animation: const MapAnimation(
@@ -127,8 +173,22 @@ class MapServiceImpl extends IMapService {
   }
 
   @override
-  Stream<List<PlacemarkMapObject>> get stream => _streamController.stream;
+  Stream<List<PlacemarkMapObject>> get streamPlacemark =>
+      _streamController.stream;
 
   @override
-  Sink<List<PlacemarkMapObject>> get sink => _streamController.sink;
+  Sink<List<PlacemarkMapObject>> get sinkPlacemark => _streamController.sink;
+
+  @override
+  Sink<GeocodeResponse> get sinkGeocoder => _geocodeResponseController.sink;
+
+  @override
+  Stream<GeocodeResponse> get streamGeocoder =>
+      _geocodeResponseController.stream;
+
+  @override
+  Sink<bool> get sinkAnimation => _animationController.sink;
+
+  @override
+  Stream<bool> get streamAnimation => _animationController.stream;
 }
